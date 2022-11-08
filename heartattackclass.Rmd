@@ -1,0 +1,87 @@
+## General libraries
+
+```{r}
+library(caret)
+```
+
+
+## Read in data
+
+```{r}
+heart <- read.csv("heart.csv")
+
+heart
+```
+
+
+## Split intro train/test sets
+
+```{r}
+# set seed
+set.seed(904)
+
+# create row index; 80% split
+tIndex <- sample(1:nrow(heart), 0.8*nrow(heart))
+
+# use index to split intro train/test
+trainD <- heart[tIndex, ]
+testD <- heart[-tIndex, ]
+```
+
+# Random Forest classification
+
+## Load random forest package
+
+```{r}
+library(randomForest)
+```
+
+### Build classification model
+
+```{r}
+heart.rf <- randomForest(as.factor(output) ~ ., data=trainD, importance=TRUE, proximity=TRUE)
+```
+
+```{r}
+confusionMatrix(data=predict(heart.rf, testD), reference=as.factor(testD$output))
+```
+
+Accuracy value of 0.9016.
+
+mtry, ntrees
+
+```{r}
+mvar <- c(1:13)
+nvar <- seq(50, 1000, 50)
+bestmod <- heart.rf
+bestval <- 0
+
+for (val in mvar) {
+  mvar1 <- mvar[val]
+  
+  for (val in nvar) {
+    newheart <- randomForest(as.factor(output) ~ ., data=trainD, importance=TRUE, proximity=TRUE, mtry=mvar1, ntrees=nvar)
+    conf <- confusionMatrix(data=predict(newheart, testD), reference=as.factor(testD$output))
+
+    if(conf$overall['Accuracy'] > bestval) {
+      bestmod <- newheart
+      bestval <- conf$overall['Accuracy']
+    }
+    
+  }
+}
+
+
+```
+
+
+```{r}
+bestmod
+bestval
+
+```
+
+```{r}
+confusionMatrix(data=predict(bestmod, testD), reference=as.factor(testD$output))
+```
+
