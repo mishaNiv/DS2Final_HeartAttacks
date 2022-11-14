@@ -15,7 +15,21 @@ my_ui <- fluidPage(
                           "Cholesterol Level", "Fasting Blood Sugar", 
                           "Resting ECG", "Thalassemia Results", 
                           "Maximum Heart Rate", "Slope of Peak Exercise")),
-  plotOutput(outputId = "compare")
+  plotOutput(outputId = "compare"),
+  sidebarLayout(
+    sidebarPanel(
+      textInput(inputId = "age", label = "Enter your age below"),
+      textInput(inputId = "sex", label = "Enter your sex below (0: male, 1: female)"),
+      textInput(inputId = "cp", label = "Enter your type of chest pain below
+                (1: typical angina, 2: atypical angina, 3: non-anginal pain, 
+                4: asymptomatic)"),
+      textInput(inputId = "rbps", label = "Enter your resting blood pressure below"),
+      textInput(inputId = "chol", label = "Enter your cholesterol level below"),
+      textInput(inputId = "maxrate", label = "Enter your maximum heart rate below")
+    ),
+    
+    mainPanel(textOutput(outputId = "pred"))
+  )
 )
 
 my_server <- function(input, output) {
@@ -73,6 +87,15 @@ my_server <- function(input, output) {
       theme_bw(base_size = 16)
     
     baryay
+  })
+  
+  output$pred <- renderText({
+    str = "Using a Random Forest model (which has a 93% accuracy), we have 
+    determined that you are "
+    
+    
+    
+    str
   })
   
 }
