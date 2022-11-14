@@ -3,7 +3,6 @@ library("tidyverse")
 library("corrplot")
 library("caret")
 
-
 data = read.csv("./heart.csv")
 
 my_ui <- fluidPage(
