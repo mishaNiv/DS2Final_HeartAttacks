@@ -27,7 +27,9 @@ my_ui <- fluidPage(
                 4: asymptomatic)"),
       textInput(inputId = "rbps", label = "Enter your resting blood pressure below"),
       textInput(inputId = "chol", label = "Enter your cholesterol level below"),
-      textInput(inputId = "maxrate", label = "Enter your maximum heart rate below")
+      textInput(inputId = "maxrate", label = "Enter your maximum heart rate below"),
+      textInput(inputId = "thals", label = "Enter your thalassemia diagnosis 
+                below (2: normal, 1: fixed defect, 3: reversible defect)")
     ),
     
     mainPanel(textOutput(outputId = "pred"))
@@ -94,44 +96,50 @@ my_server <- function(input, output) {
   output$pred <- renderText({
     
     #random forest model
-      hrtmodel <- randomForest(as.factor(output) ~ ., data=trainD, 
+      hrtmodel <- randomForest(as.factor(output) ~ ., data=data, 
                         importance=TRUE, proximity=TRUE, mtry=1, ntrees=500)
       
+    #creating prediction var
+      preds = 2
       
-      
-    #changing testing data using inputs
+    #changing testing data using inputs and predicting on new data
       if (input$age != "") {
         averages["age"] = input$age
+        preds = predict(hrtmodel, averages)
       } else if (input$sex != "") {
         averages["sex"] = input$sex
+        preds = predict(hrtmodel, averages)
       } else if (input$cp != "") {
         averages["cp"] = input$cp
+        preds = predict(hrtmodel, averages)
       } else if (input$rbps != "") {
         averages["restbps"] = input$rbps
+        preds = predict(hrtmodel, averages)
       } else if (input$chol != "") {
         averages["chol"] = input$chol
+        preds = predict(hrtmodel, averages)
       } else if (input$maxrate != "") {
         averages["maxrate"] = input$maxrate
+        preds = predict(hrtmodel, averages)
+      } else if (input$thals != "") {
+        averages["thal"] = input$thals
+        preds = predict(hrtmodel, averages)
       }
     
-      
-    #predicting
-      preds = predict(hrtmodel, averages)
-      
-    str = "Using a Random Forest model (which has a 93% accuracy), we have 
-    determined that you are "
     
-    prediction = "ISSUE"
-    
-    if (preds == 1) {
-      prediction = "likely to have heart problems."
+    if (preds == 2) {
+      str = "Using a Random Forest model (which has a 93% accuracy), we have 
+        determined that our random patient is unlikely to have heart problems."
+    } else if (preds == 1) {
+      str = "Using a Random Forest model (which has a 93% accuracy), we have 
+        determined that you are likely to have heart problems."
     } else if (preds == 0) {
-      prediction = "not likely to have heart problems"
+      str = "Using a Random Forest model (which has a 93% accuracy), we have 
+        determined that you are unlikely to have heart problems."
     }
     
-    str = paste(str, prediction)
-    
     str
+    
   })
   
 }
