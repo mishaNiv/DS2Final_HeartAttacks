@@ -1,2 +1,2 @@
 ﻿age,sex,cp,restbps,chol,fbs,restecg,maxrate,exng,oldpeak,slp,majvessel,thall
-54.37,0.68,4,131.6,246.3,0.15,0.53,149.6,0.33,1.04,1.4,0.73,2.31
+54.37,0.68,4,131.6,246.3,0,0,149.6,0,1.04,1,0,3
