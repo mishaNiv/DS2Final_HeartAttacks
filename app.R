@@ -2,8 +2,10 @@ library("shiny")
 library("tidyverse")
 library("corrplot")
 library("caret")
+library("randomForest")
 
 data = read.csv("./heart.csv")
+averages = read.csv("./averages.csv")
 
 my_ui <- fluidPage(
   h1("Analysis and Prediction of Heart Disease"),
@@ -90,10 +92,44 @@ my_server <- function(input, output) {
   })
   
   output$pred <- renderText({
+    
+    #random forest model
+      hrtmodel <- randomForest(as.factor(output) ~ ., data=trainD, 
+                        importance=TRUE, proximity=TRUE, mtry=1, ntrees=500)
+      
+      
+      
+    #changing testing data using inputs
+      if (input$age != "") {
+        averages["age"] = input$age
+      } else if (input$sex != "") {
+        averages["sex"] = input$sex
+      } else if (input$cp != "") {
+        averages["cp"] = input$cp
+      } else if (input$rbps != "") {
+        averages["restbps"] = input$rbps
+      } else if (input$chol != "") {
+        averages["chol"] = input$chol
+      } else if (input$maxrate != "") {
+        averages["maxrate"] = input$maxrate
+      }
+    
+      
+    #predicting
+      preds = predict(hrtmodel, averages)
+      
     str = "Using a Random Forest model (which has a 93% accuracy), we have 
     determined that you are "
     
+    prediction = "ISSUE"
     
+    if (preds == 1) {
+      prediction = "likely to have heart problems."
+    } else if (preds == 0) {
+      prediction = "not likely to have heart problems"
+    }
+    
+    str = paste(str, prediction)
     
     str
   })
