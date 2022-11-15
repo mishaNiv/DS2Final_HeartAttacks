@@ -26,8 +26,76 @@ summary(heart)
 
 Everything has values, there are a number of binaries
 
-Correlation plot :)
+<http://www.sthda.com/english/wiki/ggplot2-histogram-plot-quick-start-guide-r-software-and-data-visualization> ggplot ref because OK I guess I'll use ggplot for the final :((
 
+```{r}
+ggplot(heart, aes(x=sex)) + 
+ geom_histogram(aes(y=..density..), color="black", fill="lightsalmon")
+
+ggplot(heart, aes(x=age)) + 
+ geom_histogram(aes(y=..density..), color="black", fill="lightsalmon")+
+ geom_density(alpha=.2, fill="brown1")
+
+ggplot(heart, aes(x=cp)) + 
+ geom_histogram(aes(y=..density..), color="black", fill="lightsalmon")
+
+ggplot(heart, aes(x=restbps)) + 
+ geom_histogram(aes(y=..density..), color="black", fill="lightsalmon")+
+ geom_density(alpha=.2, fill="brown1")
+
+ggplot(heart, aes(x=chol)) + 
+ geom_histogram(aes(y=..density..), color="black", fill="lightsalmon")+
+ geom_density(alpha=.2, fill="brown1")
+
+ggplot(heart, aes(x=fbs)) + 
+ geom_histogram(aes(y=..density..), color="black", fill="lightsalmon")
+
+ggplot(heart, aes(x=restecg)) + 
+ geom_histogram(aes(y=..density..), color="black", fill="lightsalmon")
+
+ggplot(heart, aes(x=maxrate)) + 
+ geom_histogram(aes(y=..density..), color="black", fill="lightsalmon")+
+ geom_density(alpha=.2, fill="brown1")
+
+ggplot(heart, aes(x=exng)) + 
+ geom_histogram(aes(y=..density..), color="black", fill="lightsalmon")
+
+ggplot(heart, aes(x=oldpeak)) + 
+ geom_histogram(aes(y=..density..), color="black", fill="lightsalmon")+
+ geom_density(alpha=.2, fill="brown1")
+
+ggplot(heart, aes(x=slp)) + 
+ geom_histogram(aes(y=..density..), color="black", fill="lightsalmon")
+
+ggplot(heart, aes(x=majvessel)) + 
+ geom_histogram(aes(y=..density..), color="black", fill="lightsalmon")
+
+ggplot(heart, aes(x=thall)) + 
+ geom_histogram(aes(y=..density..), color="black", fill="lightsalmon")
+
+ggplot(heart, aes(x=output)) + 
+ geom_histogram(aes(y=..density..), color="black", fill="lightsalmon")
+```
+
+Sex: twice as many females as males
+Age: close to normal, ranges from 30 to 80 in age
+CP: pain is primarily 1, very few asymptomatics
+Resting blood pressure: density plot is relatively normal, the peaks themselves alternate high/low, the thing is shifted to the left --> outliers have high bps, not low
+Chol: steep normal slope, distribution much more even than restbps aka no up/down/extremes, again all outliers have high values
+FBS: five times as many patients with fasting blood sugar below 120 than above
+Restecg: resting electrocardiographic results, normal & st-t wave normality are about even, minimal amount of 2/left-ventricular hypertrophy
+Max-rate: normal-ish, right-leaning
+Exng: twice as many without exercise-induced angina
+Old peak: majority are zero, then odd very flat parabola -- almonst more linear than normal?
+SLP: about same number of 1 and 2s, very few 0s
+Maj Vessel: almost a linear decrease
+Thall: very few 0, 1,  a lot of 2,3
+Output: relatively even number of problems vs no problems
+
+
+### Correlation plot :)
+
+<https://r-coder.com/correlation-plot-r/> for how to build/specialize
 ```{r}
 corrplot(cor(heart), method = "shade",
          title = "Correlation of Heart Data",
@@ -38,7 +106,6 @@ corrplot(cor(heart), method = "shade",
          tl.col = "darkred"
          ) 
 ```
-
 
 ## Split intro train/test sets
 
