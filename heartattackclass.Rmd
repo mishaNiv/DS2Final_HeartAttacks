@@ -64,9 +64,17 @@ library(randomForest)
 
 ### Build classification model
 
+Referencing original RF homework and Classification homework; in those, references included:
+
+<Dr. Scott> for miscellaneous stuff
+<https://www.statology.org/random-forest-in-r/> original RF learning
+<https://www.geeksforgeeks.org/random-forest-approach-for-classification-in-r-programming/> for setting RF to classification
+
 ```{r}
 heart.rf <- randomForest(as.factor(output) ~ ., data=trainD, importance=TRUE, proximity=TRUE)
 ```
+
+<https://www.digitalocean.com/community/tutorials/confusion-matrix-in-r> for confusion matrices
 
 ```{r}
 confusionMatrix(data=predict(heart.rf, testD), reference=as.factor(testD$output))
@@ -74,7 +82,8 @@ confusionMatrix(data=predict(heart.rf, testD), reference=as.factor(testD$output)
 
 Accuracy value of 0.9016.
 
-mtry, ntrees
+<https://www.rdocumentation.org/packages/randomForest/versions/4.7-1.1/topics/randomForest> referencing parameters
+<https://www.educba.com/nested-for-loop-in-r/> remembering how R for loops work
 
 ```{r}
 mvar <- c(1:13)
@@ -99,7 +108,6 @@ for (val in mvar) {
 
 ```
 
-
 ```{r}
 bestmod
 bestval
@@ -113,6 +121,11 @@ confusionMatrix(data=predict(bestmod, testD), reference=as.factor(testD$output))
 
 # SVM Classification
 
+Used previous SVM homework as major reference. Thus...
+
+<Dr. Scott> as general learning reference
+<https://www.svm-tutorial.com/2014/10/support-vector-regression-r/> as original SVM reference
+
 ### Libraries 
 
 ```{r}
@@ -120,6 +133,8 @@ library(e1071)
 ```
 
 ### Build model
+
+<https://www.geeksforgeeks.org/classifying-data-using-support-vector-machinessvms-in-r/> how to make SVM do classification
 
 ```{r}
 heart.svm = svm(formula = output ~ ., data = trainD, type = 'C-classification', kernel = 'linear')
@@ -133,11 +148,8 @@ confusionMatrix(data=predict(heart.svm, testD), reference=as.factor(testD$output
 
 This is already at 91.8%. That's pretty good.
 
-```{r}
-heart.svm = svm(formula = output ~ ., data = trainD, type = 'C-classification', kernel = 'linear')
-confusionMatrix(data=predict(heart.svm, testD), reference=as.factor(testD$output))
-```
-
+<https://www.rdocumentation.org/packages/e1071/versions/1.7-12/topics/svm> reference for SVM params
+(Utilizing RF code as well but reformatted for SVM params)
 
 ```{r}
 gvar <- c(-5:5)
