@@ -78,7 +78,7 @@ mtry, ntrees
 
 ```{r}
 mvar <- c(1:13)
-nvar <- seq(50, 1000, 50)
+nvar <- seq(25, 1000, 25)
 bestmod <- heart.rf
 bestval <- 0
 
@@ -110,3 +110,66 @@ bestval
 confusionMatrix(data=predict(bestmod, testD), reference=as.factor(testD$output))
 ```
 
+
+# SVM Classification
+
+### Libraries 
+
+```{r}
+library(e1071)
+```
+
+### Build model
+
+```{r}
+heart.svm = svm(formula = output ~ ., data = trainD, type = 'C-classification', kernel = 'linear')
+```
+
+### Find accuracy
+
+```{r}
+confusionMatrix(data=predict(heart.svm, testD), reference=as.factor(testD$output))
+```
+
+This is already at 91.8%. That's pretty good.
+
+```{r}
+heart.svm = svm(formula = output ~ ., data = trainD, type = 'C-classification', kernel = 'linear')
+confusionMatrix(data=predict(heart.svm, testD), reference=as.factor(testD$output))
+```
+
+
+```{r}
+gvar <- c(-5:5)
+evar <- seq(0, 1, 0.05)
+bestmod <- heart.svm
+bestval <- 0
+
+for (val in gvar) {
+  gvar1 <- gvar[val]
+  
+  for (val in evar) {
+    newheart <- svm(formula = output ~ ., data = trainD, type = 'C-classification', kernel = 'linear', epsilon=evar, gamma=10^gvar1)
+    conf <- confusionMatrix(data=predict(newheart, testD), reference=as.factor(testD$output))
+
+    if(conf$overall['Accuracy'] > bestval) {
+      bestmod <- newheart
+      bestval <- conf$overall['Accuracy']
+    }
+    
+  }
+}
+
+
+```
+
+
+```{r}
+bestmod
+bestval
+
+```
+
+This is fractionally better than the original svm model. The random forest model seems to be better.
+
+SVM was certainly much quicker to reach a similar accuracy, but RF still has the higher accuracy.
