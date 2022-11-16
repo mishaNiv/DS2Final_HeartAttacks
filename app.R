@@ -4,48 +4,83 @@ library("corrplot")
 library("caret")
 library("randomForest")
 
+# load in heart data & averages for prediction interface
 data = read.csv("./heart.csv")
 averages = read.csv("./averages.csv")
 
 my_ui <- fluidPage(
+  
+  # header
   h1("Analysis and Prediction of Heart Disease"),
-  plotOutput(outputId = "correlations"),
-  selectInput(inputId = "var1", label = "Choose a variable to compare:", 
+  
+  # tabsetPanel --> enables the storage of each "function" on its own page
+  tabsetPanel(
+    # <https://shiny.rstudio.com/reference/shiny/1.2.0/insertTab.html> for tabs
+  
+    # tabPanel --> indicates a new/individual tab
+    tabPanel( "Correlation Plot", fluid = TRUE,
+              # correlation plot
+      plotOutput(outputId = "correlations")
+    ),
+  
+    # tab for the heart problems by variable plots
+    tabPanel("Variable Plots", fluid = TRUE,
+             # dropdown for choosing variable
+    selectInput(inputId = "var1", label = "Choose a variable to compare:", 
               choices = c("Age", "Sex", "Exercise Induced Angina", 
                           "Number of Major Blood Vessels", 
                           "Type of Chest Pain", "Resting Blood Pressure",
                           "Cholesterol Level", "Fasting Blood Sugar", 
                           "Resting ECG", "Thalassemia Results", 
                           "Maximum Heart Rate", "Slope of Peak Exercise")),
-  plotOutput(outputId = "compare"),
-  sidebarLayout(
-    sidebarPanel(
-      textInput(inputId = "age", label = "Enter your age below"),
-      textInput(inputId = "sex", label = "Enter your sex below (0: male, 1: female)"),
-      textInput(inputId = "cp", label = "Enter your type of chest pain below
+    # plot call
+    plotOutput(outputId = "compare")
+  ),
+  
+  # tab panel for prediction interface
+  tabPanel("Prediction Model", fluid = TRUE,
+    sidebarLayout(
+      # massive sidebar taking user text inputs for multiple variables
+      sidebarPanel(
+        textInput(inputId = "age", label = "Enter your age below"),
+        textInput(inputId = "sex", label = "Enter your sex below (0: male, 1: female)"),
+        textInput(inputId = "cp", label = "Enter your type of chest pain below
                 (1: typical angina, 2: atypical angina, 3: non-anginal pain, 
                 4: asymptomatic)"),
-      textInput(inputId = "rbps", label = "Enter your resting blood pressure below"),
-      textInput(inputId = "chol", label = "Enter your cholesterol level below"),
-      textInput(inputId = "maxrate", label = "Enter your maximum heart rate below"),
-      textInput(inputId = "thals", label = "Enter your thalassemia diagnosis 
+        textInput(inputId = "rbps", label = "Enter your resting blood pressure below"),
+        textInput(inputId = "chol", label = "Enter your cholesterol level below"),
+        textInput(inputId = "maxrate", label = "Enter your maximum heart rate below"),
+        textInput(inputId = "thals", label = "Enter your thalassemia diagnosis 
                 below (2: normal, 1: fixed defect, 3: reversible defect)")
-    ),
+        # style: changes background color to match scheme, and font color to then match box better
+      , style="background-color:lightsalmon;color:#4d190f"
+      ),
     
-    mainPanel(textOutput(outputId = "pred"))
+      # learned colors/styling from <https://felixluginbuhl.com/textyle/>
+      mainPanel(
+        # colors <https://www.google.com/search?q=%23FF6666&rlz=1C1GCEU_enUS862US862&oq=%23FF6666&aqs=chrome..69i57.297j0j1&sourceid=chrome&ie=UTF-8>
+        # information
+        h2("Please enter at least 5 values before trusting your results.", style="color:#d4571e"),
+        h4("Additionally, please understand that there are several more variables that go into this analysis, which are excluded because, unless you've already been admitted for heart disease, you are unlikely to know them off the top of your head, and we're not doctors. Happy heart disease!", style="color:sandybrown"),
+        # the actual prediction
+        textOutput(outputId = "pred")
+        )
+      )
+    )
   )
 )
 
 my_server <- function(input, output) {
 
   output$correlations <- renderPlot ({
+    # correlation plot: using custom colors to match heart scheme
     corr = corrplot(cor(heart), method = "shade",
                     title = "Correlation of Heart Data",
                     col = colorRampPalette(c("white","lightsalmon","brown2"))(100),
-                    tl.pos = "l", 
+                    tl.pos = "l", # position of table labels
                     mar = c(2, 1, 3, 1),
-                    tl.cex = 0.75,
-                    tl.col = "darkred"
+                    tl.cex = 0.75, # size of labels
+                    tl.col = "darkred" # label colors
     ) 
     
     corr
@@ -55,6 +90,7 @@ my_server <- function(input, output) {
     var1 = input$var1
     var2 = input$var2
     
+    # if statement takes the chosen variable and assigns that to be the variable used in the produced plot
     if (var1 == "Age") {
       var1 = data$age
     } else if (var1 == "Sex") {
@@ -84,7 +120,7 @@ my_server <- function(input, output) {
     baryay = ggplot(data, aes(x=var1, y=output)) + 
       geom_bar(aes(fill = var1), stat='identity') +
       scale_fill_gradient2(mid = "sandybrown",
-                           high = "brown2") + 
+                           high = "brown2") + # colors for aesthetics
       ggtitle("Number of People with Heart Diseases by Chosen Variable") +
       xlab(input$var1) +
       ylab("Number of Heart Attacks") +
@@ -106,33 +142,41 @@ my_server <- function(input, output) {
       if (input$age != "") {
         averages["age"] = input$age
         preds = predict(hrtmodel, averages)
-      } else if (input$sex != "") {
+      }
+      if (input$sex != "") {
         averages["sex"] = input$sex
         preds = predict(hrtmodel, averages)
-      } else if (input$cp != "") {
+      }
+      if (input$cp != "") {
         averages["cp"] = input$cp
         preds = predict(hrtmodel, averages)
-      } else if (input$rbps != "") {
+      }
+      if (input$rbps != "") {
         averages["restbps"] = input$rbps
         preds = predict(hrtmodel, averages)
-      } else if (input$chol != "") {
+      }
+      if (input$chol != "") {
         averages["chol"] = input$chol
         preds = predict(hrtmodel, averages)
-      } else if (input$maxrate != "") {
+      }
+      if (input$maxrate != "") {
         averages["maxrate"] = input$maxrate
         preds = predict(hrtmodel, averages)
-      } else if (input$thals != "") {
+      }
+      if (input$thals != "") {
         averages["thal"] = input$thals
         preds = predict(hrtmodel, averages)
+        
       }
     
     
+      # responses/outputs based off the prediction
     if (preds == 2) {
       str = "Using a Random Forest model (which has a 93% accuracy), we have 
         determined that our random patient is unlikely to have heart problems."
     } else if (preds == 1) {
       str = "Using a Random Forest model (which has a 93% accuracy), we have 
-        determined that you are likely to have heart problems."
+        determined that you are likely to have heart problems. CLOSEST HOSPITAL: Kaiser Permanente Bellevue Medical Center (3.8 stars - 335 reviews!)"
     } else if (preds == 0) {
       str = "Using a Random Forest model (which has a 93% accuracy), we have 
         determined that you are unlikely to have heart problems."
