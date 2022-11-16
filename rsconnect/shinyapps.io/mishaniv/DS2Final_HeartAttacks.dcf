@@ -1,0 +1,14 @@
+name: DS2Final_HeartAttacks
+title: DS2Final_HeartAttacks
+username:
+account: mishaniv
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7644129
+bundleId: 6519847
+url: https://mishaniv.shinyapps.io/DS2Final_HeartAttacks/
+when: 1668588894.82449
+lastSyncTime: 1668588894.82451
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: averages.xlsx|heartattackclass.Rmd|README.md
